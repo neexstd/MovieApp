@@ -53,7 +53,7 @@
     "vitest": "^0.23.4"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "tsc && vite build",
     "dev": "vite dev",
     "format": "prettier --write .",
     "lint:format": "prettier --cache --check .",
