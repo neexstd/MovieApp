@@ -55,7 +55,7 @@ module.exports = {
     'import/default': 0,
     'import/namespace': 0,
     'import/no-duplicates': 2,
-    'import/no-extraneous-dependencies': [2],
+    'import/no-extraneous-dependencies': [0],
     'import/no-namespace': 2,
     'import/order': 0,
     'no-console': 0,

@@ -1,30 +1,89 @@
-const Link = (props: JSX.IntrinsicElements['a']) => (
-  <a
-    className="text-pink-500 underline hover:no-underline dark:text-pink-400"
-    {...props}
-  />
-);
+// eslint-disable-next-line import/no-extraneous-dependencies
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { addMovies } from './service/movieSlice';
+import { Movie } from './types/movies';
+import Header from './components/Header';
+import { Routes, Route } from 'react-router-dom';
+import Top100 from './components/Top100';
+import MovieDetails from './components/MovieDetails';
+import { API_KEY } from './service/apikey';
+import { addPopularMovies } from './service/popularSlice';
+import Popular from './components/Popular';
+import Search from './components/Search';
+import PageNotFound from './components/PageNotFound';
 
 export default function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const requestForMovies = async () => {
+      const response = await axios.all([
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=2`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=3`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=4`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=5`,
+        ),
+      ]);
+
+      const allData: Movie[] = [];
+
+      response.map((data) => allData.push(...data.data.results));
+
+      dispatch(addMovies(allData));
+    };
+
+    const requestForPopularMovies = async () => {
+      const response = await axios.all([
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=2`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=3`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=4`,
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=5`,
+        ),
+      ]);
+
+      const allData: Movie[] = [];
+
+      response.map((data) => allData.push(...data.data.results));
+
+      dispatch(addPopularMovies(allData));
+    };
+
+    requestForMovies();
+    requestForPopularMovies();
+  }, [dispatch]);
+
   return (
-    <div className="mx-auto my-8 mt-10 w-8/12 rounded border border-gray-200 p-4 shadow-md dark:border-neutral-600 dark:bg-neutral-800 dark:shadow-none">
-      <h1 className="mb-4 text-4xl">Welcome</h1>
-      <p className="my-4">
-        <em>Minimal, fast, sensible defaults.</em>
-      </p>
-      <p className="my-4">
-        Using <Link href="https://vitejs.dev/">Vite</Link>,{' '}
-        <Link href="https://reactjs.org/">React</Link>,{' '}
-        <Link href="https://www.typescriptlang.org/">TypeScript</Link> and{' '}
-        <Link href="https://tailwindcss.com/">Tailwind</Link>.
-      </p>
-      <p className="my-4">
-        Change{' '}
-        <code className="border-1 2py-1 rounded border border-pink-500 bg-neutral-100 px-1 font-mono text-pink-500 dark:border-pink-400 dark:bg-neutral-700 dark:text-pink-400">
-          src/App.tsx
-        </code>{' '}
-        for live updates.
-      </p>
+    <div className="font-montserrat dark:bg-gray-600">
+      <Header />
+      <Routes>
+        <Route element={<Top100 />} path="/"></Route>
+        <Route element={<MovieDetails />} path="/movie/:movieId"></Route>
+        <Route element={<Popular />} path="/popular"></Route>
+        <Route element={<Search />} path="/search"></Route>
+        <Route element={<PageNotFound />} path="/*"></Route>
+      </Routes>
     </div>
   );
 }
